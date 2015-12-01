@@ -8,13 +8,7 @@ jdk:
   - oraclejdk8
   - oraclejdk7
   - openjdk7
-  - openjdk6
-  
-after_success:
-  - mvn jacoco:report coveralls:report
-  
-after_failure:
-  - mvn jacoco:report coveralls:report
+  #- openjdk6
 
 before_script:
   - git submodule update --remote --recursive
@@ -25,5 +19,5 @@ script:
   - mvn test -B
 
 after_script:
-    sh print_surefire_reports.sh
+    print_surefire_reports.sh
  

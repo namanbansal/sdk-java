@@ -16,6 +16,14 @@ after_success:
 after_failure:
   - mvn jacoco:report coveralls:report
 
+before_script:
+  - git submodule update --remote --recursive
+
+script:
+  - cd sample-code-java
+  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+  - mvn test -B
+
 after_script:
     sh print_surefire_reports.sh
  

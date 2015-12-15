@@ -113,7 +113,9 @@
                 <version>2.9</version>
                 <configuration>
                     <includes>
-                        <include> **/mocktest/**.java</include>
+                        <include> **/api/controller/mocktest/**.java</include>
+                        <include> **/api/controller/sampletest/**.java</include>
+                        <include> **/api/controller/test/**.java</include>
                     </includes>
                     <skipTests>false</skipTests>
                     <forkCount>1</forkCount>
@@ -127,6 +129,7 @@
                         <TRANSACTION_KEY>TRANSACTION_KEY</TRANSACTION_KEY>
                         <MD5_HASH_KEY>MD5_HASH_KEY</MD5_HASH_KEY>
                     </environmentVariables>
+                    <argLine>${surefireArgLine}</argLine>
                 </configuration>
             </plugin>
             <plugin>
@@ -137,48 +140,60 @@
                     <repoToken>t7RizHlek3fJr3vvdMwlH9CcZMzLPUUHh</repoToken>
                 </configuration>
             </plugin>
+            <!-- Code coverage plugin, generates coverage report to target/site/jacoco/
+               To skip coverage generation add -Djacoco.skip=true
+            -->
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <version>2.7</version>
-                <configuration>
-                    <format>xml</format>
-                    <maxmem>256m</maxmem>
-                    <!-- aggregated reports for multi-module projects -->
-                    <aggregate>true</aggregate>
-                    <instrumentation>
-                        <excludes>
-                          <exclude>src/main/java/net/authorize/aim/**/*.class</exclude>
-                          <exclude>src/main/java/net/authorize/cim/**/*.java</exclude>
-                          <exclude>src/main/java/net/authorize/cim/*.java</exclude>
-                          <exclude>src/main/java/net/authorize/cim/*.class</exclude>
-                          <exclude>src/main/java/net/authorize/sim/**/*.class</exclude>
-                          <exclude>src/main/java/net/authorize/arb/**/*.class</exclude>
-                          <exclude>src/main/java/net/authorize/data/**/*.class</exclude>
-                          <exclude>src/main/java/net/authorize/reporting/**/*.class</exclude>
-                          <exclude>src/main/java/net/authorize/util/**/*.class</exclude>
-                          <exclude>src/main/java/net/authorize/xml/**/*.class</exclude>
-                        </excludes>
-                    </instrumentation>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>			
-                        <goals>
-                            <goal>cobertura</goal>
-                        </goals>
-                    </execution>
-                </executions>
+               <groupId>org.jacoco</groupId>
+               <artifactId>jacoco-maven-plugin</artifactId>
+               <version>0.7.2.201409121644</version>
+               <configuration>
+                  <excludes>
+                      <exclude>**/aim/**/*.class</exclude>
+                      <exclude>**/cim/*</exclude>
+                      <exclude>**/sim/**</exclude>
+                      <exclude>**/*Enum.class</exclude>
+                      <exclude>**/arb/**/*.class</exclude>
+                      <exclude>**/data/**/*.class</exclude>
+                      <exclude>**/reporting/**/*.class</exclude>
+                      <exclude>**/util/*</exclude>
+                      <exclude>**/xml/*</exclude>
+                     
+                  </excludes>
+               </configuration>
+               <executions>
+                  <execution>
+                     <id>pre-unit-test</id>
+                     <goals>
+                        <goal>prepare-agent</goal>
+                     </goals>
+                     <configuration>
+                        <destFile>${project.build.directory}/jacoco.exec</destFile>
+                        <propertyName>surefireArgLine</propertyName>
+                     </configuration>
+                  </execution>
+                  <execution>
+                     <id>post-unit-test</id>
+                     <phase>test</phase>
+                     <goals>
+                        <goal>report</goal>
+                     </goals>
+                     <configuration>
+                        <dataFile>${project.build.directory}/jacoco.exec</dataFile>
+                        <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
+                     </configuration>
+                  </execution>
+                  <execution>
+                     <id>default-report</id>
+                     <phase>prepare-package</phase>
+                     <goals>
+                        <goal>report</goal>
+                     </goals>
+                  </execution>
+               </executions>
             </plugin>
+            
         </plugins>
-        <resources>
-            <resource>
-                <directory>resources</directory>
-                <filtering>false</filtering>
-                <includes>
-                    <include>*</include>
-                </includes>
-            </resource>
-        </resources>
+        
     </build>
 </project>

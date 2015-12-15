@@ -11,11 +11,8 @@ jdk:
   - openjdk6
   
 after_success:
-  - mvn clean cobertura:cobertura coveralls:report
-  
-after_failure:
-  - mvn clean cobertura:cobertura coveralls:report
+  - mvn jacoco:report coveralls:report
 
 after_script:
-    print_surefire_reports.sh
+    sh print_surefire_reports.sh
  
